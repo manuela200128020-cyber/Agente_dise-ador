@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil — DesignAI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(236, 72, 153, 0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 60%);
+            z-index: 0; pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0; pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        .navbar {
+            position: relative; z-index: 10;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            background: rgba(10, 10, 15, 0.7);
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 12px;
+            font-weight: 700; font-size: 1.2rem; color: #fff; letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        .btn-logout {
+            padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+            text-decoration: none; cursor: pointer; border: none;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff;
+            transition: all 0.2s ease;
+        }
+        .btn-logout:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3); }
+
+        .main-content {
+            position: relative; z-index: 1;
+            max-width: 640px; margin: 40px auto; padding: 0 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 40px 36px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            text-align: center; margin-bottom: 32px;
+        }
+
+        .avatar {
+            width: 72px; height: 72px; margin: 0 auto 16px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 700; color: #fff;
+            box-shadow: 0 10px 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .card-header h1 {
+            font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff, #c084fc);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-header p { color: #a1a1aa; font-size: 0.9rem; margin-top: 4px; }
+
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px; padding: 14px 16px;
+        }
+
+        .info-item.full { grid-column: 1 / -1; }
+
+        .info-item label {
+            display: block; font-size: 0.7rem; font-weight: 500;
+            color: #71717a; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;
+        }
+
+        .info-item span {
+            display: block; font-size: 0.95rem; color: #fff; font-weight: 500;
+        }
+
+        .info-item .email-value {
+            color: #c084fc;
+        }
+
+        .section-title {
+            font-size: 0.85rem; font-weight: 600; color: #a1a1aa;
+            margin-bottom: 16px; padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block; font-size: 0.75rem; font-weight: 500;
+            color: #a1a1aa; margin-bottom: 8px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+
+        .form-group input {
+            width: 100%; padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px; font-size: 0.95rem; color: #fff;
+            transition: all 0.25s ease; font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-save {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);
+            background-size: 200% 200%;
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; margin-top: 8px;
+            animation: gradientShift 5s ease infinite;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.35);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .messages { margin-bottom: 20px; }
+
+        .messages p {
+            padding: 12px 16px; border-radius: 12px; font-size: 0.85rem;
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .messages p.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .errorlist {
+            list-style: none; color: #f87171; font-size: 0.8rem; margin-top: 6px;
+        }
+
+        .back-link {
+            display: inline-block; margin-top: 20px;
+            color: #a1a1aa; text-decoration: none; font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: #fff; }
+
+        .form-help-text { color: #52525b; font-size: 0.75rem; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                    <path d="M2 2l7.586 7.586"/>
+                    <circle cx="11" cy="11" r="2"/>
+                </svg>
+            </div>
+            DesignAI
+        </div>
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Cerrar sesión</button>
+        </form>
+    </nav>
+
+    <div class="main-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="avatar">{{ user.username|first|upper }}</div>
+                <h1>Mi Perfil</h1>
+                <p>Información de tu cuenta</p>
+            </div>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>✓ {{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Usuario</label>
+                    <span>@{{ user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Miembro desde</label>
+                    <span>{{ user.date_joined|date:"d/m/Y" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Nombre</label>
+                    <span>{{ user.first_name|default:"—" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Apellido</label>
+                    <span>{{ user.last_name|default:"—" }}</span>
+                </div>
+                <div class="info-item full">
+                    <label>Correo electrónico</label>
+                    <span class="email-value">{{ user.email|default:"No configurado" }}</span>
+                </div>
+                <div class="info-item full">
+                    <label>Último acceso</label>
+                    <span>{{ user.last_login|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+
+            <div class="section-title">✏️ Editar información</div>
+
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="form-help-text">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn-save">Guardar cambios</button>
+            </form>
+
+            <a href="{% url 'inicio' %}" class="back-link">← Volver al inicio</a>
+        </div>
+    </div>
+</body>
+</html>

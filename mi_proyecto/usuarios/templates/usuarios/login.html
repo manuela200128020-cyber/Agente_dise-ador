@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión — DesignAI</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas de partículas artísticas */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: floatParticle linear infinite;
+        }
+
+        .particle:nth-child(1) { width: 6px; height: 6px; background: #ec4899; left: 10%; top: 20%; animation-duration: 12s; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 4px; height: 4px; background: #06b6d4; left: 80%; top: 10%; animation-duration: 15s; animation-delay: -2s; }
+        .particle:nth-child(3) { width: 8px; height: 8px; background: #8b5cf6; left: 60%; top: 70%; animation-duration: 10s; animation-delay: -4s; }
+        .particle:nth-child(4) { width: 5px; height: 5px; background: #f59e0b; left: 30%; top: 80%; animation-duration: 14s; animation-delay: -1s; }
+        .particle:nth-child(5) { width: 3px; height: 3px; background: #10b981; left: 90%; top: 50%; animation-duration: 18s; animation-delay: -6s; }
+        .particle:nth-child(6) { width: 7px; height: 7px; background: #6366f1; left: 15%; top: 60%; animation-duration: 11s; animation-delay: -3s; }
+        .particle:nth-child(7) { width: 4px; height: 4px; background: #ec4899; left: 70%; top: 30%; animation-duration: 16s; animation-delay: -5s; }
+        .particle:nth-child(8) { width: 5px; height: 5px; background: #06b6d4; left: 40%; top: 15%; animation-duration: 13s; animation-delay: -7s; }
+
+        @keyframes floatParticle {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translate(40px, -80px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Fondo degradado radial */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Grid sutil */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        /* Contenedor principal */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* Marca */
+        .brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);
+            background-size: 200% 200%;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(236, 72, 153, 0.35);
+            animation: gradientShift 4s ease infinite, float 6s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .brand-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .brand h2 {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand p {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* Tarjeta glassmorphism */
+        .login-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 40px 36px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: slideUp 0.7s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-header h1 {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .login-header .subtitle {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+        }
+
+        /* Campos del formulario */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #fff;
+            transition: all 0.25s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #52525b;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .errorlist {
+            list-style: none;
+            color: #f87171;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        /* Botón con gradiente animado */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);
+            background-size: 200% 200%;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 5s ease infinite;
+        }
+
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(255,255,255,0.15) 50%,
+                transparent 100%
+            );
+            transform: rotate(30deg) translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .btn-login:hover::after {
+            transform: rotate(30deg) translateX(100%);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.35);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Mensajes */
+        .messages {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .messages li {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            border-left: 3px solid;
+        }
+
+        .messages li.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border-color: #22c55e;
+        }
+
+        .messages li.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border-color: #ef4444;
+        }
+
+        /* Footer */
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: #a1a1aa;
+        }
+
+        .footer-text a {
+            color: #c084fc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .footer-text a:hover {
+            color: #ec4899;
+            text-decoration: underline;
+        }
+
+        /* Separador visual */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #52525b;
+            font-size: 0.75rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        /* Decorative bottom */
+        .bottom-decoration {
+            text-align: center;
+            margin-top: 32px;
+            color: #52525b;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .bottom-decoration .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #ec4899;
+            animation: pulseDot 2s infinite;
+        }
+
+        .bottom-decoration .dot:nth-child(3) {
+            background: #6366f1;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.6); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                    <path d="M2 2l7.586 7.586"/>
+                    <circle cx="11" cy="11" r="2"/>
+                </svg>
+            </div>
+            <h2>DesignAI</h2>
+            <p>Tu estudio creativo potenciado por IA</p>
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Bienvenido de vuelta</h1>
+                <p class="subtitle">Inicia sesión para continuar creando</p>
+            </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn-login">Entrar al estudio</button>
+            </form>
+
+            <div class="divider"><span>o</span></div>
+
+            <div class="footer-text">
+                ¿No tienes cuenta? <a href="{% url 'register' %}">Crea una gratis</a>
+            </div>
+        </div>
+
+        <div class="bottom-decoration">
+            <span class="dot"></span>
+            Diseño gráfico · Arte visual · IA Generativa
+            <span class="dot"></span>
+        </div>
+    </div>
+</body>
+</html>
